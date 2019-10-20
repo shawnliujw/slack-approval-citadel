@@ -6,7 +6,12 @@ const token = process.env.SLACK_TOKEN;
 const SLACK_CHANNEL = process.env.SLACK_CHANNEL;
 const web = new WebClient(token);
 const Approval = require('./approval');
+const moment = require('moment');
+const dateFormat = 'YYYY-MM-DD HH:mm:ss'
 
+const nowString = () => {
+    return moment().format(dateFormat);
+}
 // const params = {
 //     namespace: 'kezhaozhao/es-search', //CI_PROJECT_NAMESPACE
 //     environment: 'Dev', //CI_ENVIRONMENT_NAME
@@ -62,7 +67,7 @@ exports.sendApprovalMessage = async (params) => {
                     },
                     {
                         "type": "mrkdwn",
-                        "text": `*When:*\n ${new Date().toISOString()}`
+                        "text": `*When:*\n ${nowString()}`
                     }
                 ]
             },
@@ -145,10 +150,10 @@ exports.handleApprovalRes = () => {
                 await web.chat.postMessage({
                     channel: SLACK_CHANNEL,
                     link_names: true,
-                    text: `<@${payload.user.id}>  approved the request at ${new Date()}`,
+                    text: `<@${payload.user.id}>  approved the request at ${nowString()}`,
                     thread_ts: payload.message_ts
                 });
-                await cached.approve(`Approval is approved: User ${payload.user.name} approved the request at ${new Date()}, progress(${cached.approvedCount}/${cached.approvals})`);
+                await cached.approve(`Approval is approved: User ${payload.user.name} approved the request at ${nowString()}, progress(${cached.approvedCount+1}/${cached.approvals})`);
                 const approved = await cached.isApproved();
                 if(approved) {
                     await web.chat.postMessage({
@@ -161,11 +166,11 @@ exports.handleApprovalRes = () => {
                 }
 
             } else {
-                await cached.reject(`Approval is been rejected: ${payload.user.name} rejected the request at ${new Date()}`);
+                await cached.reject(`Approval is been rejected: ${payload.user.name} rejected the request at ${nowString()}`);
                 await web.chat.postMessage({
                     channel: SLACK_CHANNEL,
                     link_names: true,
-                    text: `<@${payload.user.id}>  rejected the request at ${new Date()}`,
+                    text: `<@${payload.user.id}>  rejected the request at ${nowString()}`,
                     thread_ts: payload.message_ts
                 });
                 respond({text: confirmReplacedMessage, markdown: true, replace_original: true});

@@ -1,0 +1,34 @@
+{
+  "name": "slack-approval",
+  "version": "1.0.0",
+  "description": "CI/CD approval with slack",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/shawnliujw/slack-approval.git"
+  },
+  "keywords": [
+    "CI/CD",
+    "Approval",
+    "Slack"
+  ],
+  "author": "Shawn Liu",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/shawnliujw/slack-approval/issues"
+  },
+  "homepage": "https://github.com/shawnliujw/slack-approval#readme",
+  "dependencies": {
+    "@slack/interactive-messages": "^1.3.0",
+    "@slack/web-api": "^5.2.1",
+    "bluebird": "^3.7.1",
+    "body-parser": "^1.19.0",
+    "express": "^4.17.1",
+    "ioredis": "^4.14.1",
+    "request": "^2.88.0",
+    "request-promise": "^4.2.4"
+  }
+}

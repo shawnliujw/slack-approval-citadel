@@ -120,10 +120,11 @@ exports.handleApprovalRes = () => {
     slackInteractions.action({ type: 'button' }, async (payload, respond) => {
         respond({text: `<@${payload.user.id}> thank you for your operation on the deployment approval at ${nowString()} `,link_names: true, replace_original: false,ephemeral: true});// response to slack immediately
         let invalidInteractive = false;
+        let approvalId;
         let confirmReplacedMessage = 'Approval has been terminated(approved or rejected), remove the submit buttons.'
         try {
             confirmReplacedMessage = `${payload.original_message.text}\n ~Approval has been terminated(approved or rejected)~`;
-            const approvalId = payload.callback_id;
+            approvalId = payload.callback_id;
             if(!approvalId) {
                 invalidInteractive = true;
                 throw new Error('approvalId is required, format is project_pipelineId')
@@ -183,7 +184,7 @@ exports.handleApprovalRes = () => {
                 await web.chat.postMessage({
                     channel: SLACK_CHANNEL,
                     link_names: true,
-                    text: `This approval has expired.`,
+                    text: `This approval(${approvalId}) has expired.`,
                     thread_ts: payload.message_ts
                 });
                 respond({text: confirmReplacedMessage, markdown: true, replace_original: true});

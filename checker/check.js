@@ -66,6 +66,7 @@ program
     .requiredOption('-C, --commitId <string>', 'the last commit id')
     .requiredOption('-s, --serverURL <string>', 'the approval server URL')
     .option('-E, --expire <number>', 'expire time in second, default is 30 minutes', 1800)
+    .option('-i, --interval <number>', 'the interval to check the result', 3)
     .option('-v, --approvals <number>', 'at least need  how many approvals, default is 1', 1)
     .option('-r, --retry <number>', 'retry times when error', 10)
 program
@@ -79,7 +80,8 @@ program
             await register(projectName,options);
             let errors = 0;
 
-            for(let i=0;i<1800;i+= 3) {
+            console.log(chalk.green(`Ready to check approval status every ${options.interval} seconds, progress will expire in ${options.expire}`))
+            for(let i=0;i<options.expire;i+= 3) {
                 if(errors > options.retry) {
                     throw new Error(`errors reached the max times: ${options.retry}`);
                 }
@@ -89,6 +91,7 @@ program
                     console.log(chalk.red(e.message));
                     errors++;
                 }
+                await Promise.delay(options.interval * 1000);
             }
             console.log(chalk.red('Approval timeout....'));
             process.exit(-1);

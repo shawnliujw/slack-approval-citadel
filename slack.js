@@ -130,8 +130,9 @@ exports.handleApprovalRes = () => {
             }
             const cached = await Approval.getCache(approvalId);
             if(!cached) {
+
                 invalidInteractive = true;
-                throw new Error('approvalId is expired')
+                throw new Error(`approvalId(${approvalId}) is expired.`)
             }
             if(cached.isApproved()) {
                 await web.chat.postMessage({

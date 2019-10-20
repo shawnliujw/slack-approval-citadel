@@ -8,9 +8,9 @@ const web = new WebClient(token);
 const Approval = require('./approval');
 
 // const params = {
-//     namespace: 'kezhaozhao/es-search', //CI_PROJECT_NAME
+//     namespace: 'kezhaozhao/es-search', //CI_PROJECT_NAMESPACE
 //     environment: 'Dev', //CI_ENVIRONMENT_NAME
-//     project: 'es-search-service', //CI_PROJECT_NAMESPACE
+//     project: 'es-search-service', //CI_PROJECT_NAME
 //     projectURL: 'xxxxxx', // CI_PROJECT_URL
 //     pipelineId: '5293', // $CI_PIPELINE_ID
 //     branch: 'develop', // CI_COMMIT_REF_NAME

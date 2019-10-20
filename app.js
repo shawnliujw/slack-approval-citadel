@@ -19,9 +19,9 @@ app.get('/approval/ping', (req,res)=> {
 app.use(bodyParser());
 
 // const body = {
-//     namespace: 'kezhaozhao/es-search', //CI_PROJECT_NAME
+//     namespace: 'kezhaozhao/es-search', //CI_PROJECT_NAMESPACE
 //     environment: 'Dev', //CI_ENVIRONMENT_NAME
-//     project: 'es-search-service', //CI_PROJECT_NAMESPACE
+//     project: 'es-search-service', //CI_PROJECT_NAME
 //     projectURL: 'xxxx', // CI_PROJECT_URL
 //     pipelineId: '5293', // $CI_PIPELINE_ID
 //     branch: 'develop', // CI_COMMIT_REF_NAME
@@ -29,7 +29,7 @@ app.use(bodyParser());
 //     commitTitle: 'debug flagger webhook gates', // CI_COMMIT_TITLE
 //     commitId: '7573e5f709c6231750a20601f0b3c1bc7231675f' // CI_COMMIT_SHA
 // }
-app.post('/approval', async (req,res) => {
+app.post('/approval/registry', async (req,res) => {
     const body = req.body;
     const cacheKey = `${body.project}_${body.pipelineId}`;
     await Approval.getCache(cacheKey,true,body.approvals ? parseInt(body.approvals) : 0);

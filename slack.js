@@ -118,7 +118,7 @@ exports.sendApprovalMessage = async (params) => {
 exports.handleApprovalRes = () => {
 
     slackInteractions.action({ type: 'button' }, async (payload, respond) => {
-        // console.log(payload);
+        respond({text: `<@${payload.user.id}> thank you for your operation on the deployment approval at ${nowString()} `,link_names: true, replace_original: false,ephemeral: true});// response to slack immediately
         let invalidInteractive = false;
         let confirmReplacedMessage = 'Approval has been terminated(approved or rejected), remove the submit buttons.'
         try {
@@ -137,7 +137,7 @@ exports.handleApprovalRes = () => {
                 await web.chat.postMessage({
                     channel: SLACK_CHANNEL,
                     link_names: true,
-                    text: `This approval has been approved, please do not submit repetitive`,
+                    text: `This approval has all been approved already, thanks.`,
                     thread_ts: payload.message_ts
                 });
                 respond({text: confirmReplacedMessage, markdown: true, replace_original: true});
@@ -147,7 +147,8 @@ exports.handleApprovalRes = () => {
             const resBtnValue = payload.actions[0].value;
 
             if(resBtnValue === 'yes') {
-                await web.chat.postMessage({
+                await web.chat.postMessage( {
+                    // response_url: payload.response_url,
                     channel: SLACK_CHANNEL,
                     link_names: true,
                     text: `<@${payload.user.id}>  approved the request at ${nowString()}`,
@@ -159,7 +160,7 @@ exports.handleApprovalRes = () => {
                     await web.chat.postMessage({
                         channel: SLACK_CHANNEL,
                         link_names: true,
-                        text: `This approval has been approved。(all done)`,
+                        text: `This approval has all been approved , thanks.`,
                         thread_ts: payload.message_ts
                     });
                     respond({text: confirmReplacedMessage, markdown: true, replace_original: true});
@@ -176,6 +177,7 @@ exports.handleApprovalRes = () => {
                 respond({text: confirmReplacedMessage, markdown: true, replace_original: true});
             }
         }catch (e) {
+            console.error(e);
             if(invalidInteractive) {
                 await web.chat.postMessage({
                     channel: SLACK_CHANNEL,

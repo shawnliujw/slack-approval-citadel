@@ -8,7 +8,7 @@ RUN yarn install
 FROM node:12.12-alpine
 MAINTAINER Shanw Liu <shawn.jw.liu@gmail.com>
 WORKDIR /app
-
+ENV TZ=Asia/Shanghai
 COPY --from=0 /app/node_modules /app/node_modules
 ADD app.js approval.js slack.js ./
 ADD package.json .

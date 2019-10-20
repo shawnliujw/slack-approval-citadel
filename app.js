@@ -64,14 +64,22 @@ app.use('/approval/gate', async (req,res) => {
 })
 
 
-app.listen(PORT,async () => {
-    const redis = new Redis({
-        port: process.env.REDIS_PORT || 6379, // Redis port
-        host: process.env.REDIS_HOST || "127.0.0.1", // Redis host
-        password: process.env.REDIS_PASSWD || "",
-        db: process.env.REDIS_DB || 0,
-        keyPrefix: 'job_approval_'
-    });
-    global.redis = redis;
-    console.log(`Listening server on port: ${PORT}`);
+const redis = new Redis({
+    port: process.env.REDIS_PORT || 6379, // Redis port
+    host: process.env.REDIS_HOST || "127.0.0.1", // Redis host
+    password: process.env.REDIS_PASSWD || "",
+    db: process.env.REDIS_DB || 0,
+    keyPrefix: 'job_approval_'
 });
+global.redis = redis;
+redis.on('error', err => {
+    console.log('REDIS: FAILED');
+    console.error(err);
+    process.exit(0)
+})
+redis.on('connect', () => {
+    app.listen(PORT,async () => {
+        console.log(`Listening server on port: ${PORT}`);
+    });
+})
+

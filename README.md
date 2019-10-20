@@ -29,7 +29,7 @@ deploy_prod:
   image: registry.cn-shanghai.aliyuncs.com/shawn_repo/slack-approval-checker
   stage: sample
   script:
-    - node check.js setup $CI_PROJECT_NAMESPACE -n $CI_PROJECT_NAMESPACE -e $CI_ENVIRONMENT_NAME -p $CI_PROJECT_URL -p $CI_PIPELINE_ID -b $CI_COMMIT_REF_NAME -a $GITLAB_USER_NAME -c $CI_COMMIT_TITLE -C $CI_COMMIT_SHA -s 'http://slack.example.com/approval'
+    - node /app/check.js setup $CI_PROJECT_NAME -n $CI_PROJECT_NAMESPACE -e $CI_ENVIRONMENT_NAME -P $CI_PROJECT_URL -p $CI_PIPELINE_ID -b $CI_COMMIT_REF_NAME -a $GITLAB_USER_NAME -c $CI_COMMIT_TITLE -C $CI_COMMIT_SHA -s 'http://slack.example.com/approval'
     - if [ $N -ne 0 ];  then exit ; fi
     - [your other scripts]
 ```

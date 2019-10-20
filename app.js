@@ -13,7 +13,7 @@ const app = express();
 app.use('/approval/callback', slackHandler.handleApprovalRes())
 // Example of handling static select (a type of block action)
 
-app.get('/ping', (req,res)=> {
+app.get('/approval/ping', (req,res)=> {
     res.send(`pong at: ${new Date()}`);
 })
 app.use(bodyParser());
@@ -63,23 +63,6 @@ app.use('/approval/gate', async (req,res) => {
 
 })
 
-app.get('/', async (req, res) => {
-    const body = {
-        namespace: 'kezhaozhao/es-search', //CI_PROJECT_NAME
-        project: 'es-search-service', //CI_PROJECT_NAMESPACE
-        projectURL: 'http://gitlab.greatld.com:14444/kezhaozhao/es-search/es-search-service', // CI_PROJECT_URL
-        pipelineId: '5293', // $CI_PIPELINE_ID
-        branch: 'develop', // CI_COMMIT_REF_NAME
-        author: 'Liu Jianwei', // GITLAB_USER_NAME
-        commitTitle: 'debug flagger webhook gates', // CI_COMMIT_TITLE
-        commitId: '7573e5f709c6231750a20601f0b3c1bc7231675f', // CI_COMMIT_SHA
-        approvalId: '1111111'
-    }
-    await slackHandler.sendApprovalMessage(body);
-    res.json({
-        message: 'send message by URL'
-    })
-});
 
 app.listen(PORT,async () => {
     const redis = new Redis({

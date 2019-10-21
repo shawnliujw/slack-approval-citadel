@@ -4,7 +4,9 @@
   "description": "CI/CD approval with slack",
   "main": "src/app.js",
   "scripts": {
-    "start": "node src/app.js"
+    "start": "node src/app.js",
+    "format": "prettier --write --config ./.prettierrc './src/*.js'",
+    "eslint": "./node_modules/.bin/eslint  ./src/*.js"
   },
   "repository": {
     "type": "git",
@@ -30,13 +32,18 @@
     "@slack/web-api": "^5.2.1",
     "bluebird": "^3.7.1",
     "body-parser": "^1.19.0",
-    "chalk": "^2.4.2",
-    "commander": "^4.0.0-1",
     "express": "^4.17.1",
     "ioredis": "^4.14.1",
     "lodash": "^4.17.15",
-    "moment": "^2.24.0",
-    "request": "^2.88.0",
-    "request-promise": "^4.2.4"
+    "moment": "^2.24.0"
+  },
+  "devDependencies": {
+    "eslint": "^6.5.1",
+    "eslint-config-prettier": "^6.4.0",
+    "eslint-plugin-node": "^10.0.0",
+    "eslint-plugin-prettier": "^3.1.1",
+    "husky": "^3.0.4",
+    "lint-staged": "^9.2.3",
+    "prettier": "^1.18.2"
   }
 }

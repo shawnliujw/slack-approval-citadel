@@ -10,7 +10,8 @@ MAINTAINER Shanw Liu <shawn.jw.liu@gmail.com>
 WORKDIR /app
 ENV TZ=Asia/Shanghai
 COPY --from=0 /app/node_modules /app/node_modules
-ADD app.js approval.js slack.js ./
+#ADD src/app.js approval.js slack.js ./
+ADD src/ ./src/
 ADD package.json .
 EXPOSE 7001
 CMD yarn start

@@ -2,9 +2,9 @@
   "name": "slack-approval-citadel",
   "version": "1.0.0",
   "description": "CI/CD approval with slack",
-  "main": "app.js",
+  "main": "src/app.js",
   "scripts": {
-    "start": "node app.js"
+    "start": "node src/app.js"
   },
   "repository": {
     "type": "git",
@@ -13,7 +13,11 @@
   "keywords": [
     "CI/CD",
     "Approval",
-    "Slack"
+    "Slack",
+    "Deployment",
+    "DevOps",
+    "Interactive",
+    "Process"
   ],
   "author": "Shawn Liu",
   "license": "MIT",

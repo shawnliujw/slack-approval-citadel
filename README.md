@@ -1,35 +1,41 @@
-# slack-approval
-CI/CD  approval with slack
+# Slack Approval Citadel
+This project is the bridge between [Slack Approval Guard](https://github.com/shawnliujw/slack-approval-guard/blob/master/README.md) and [Slack](https://slack.com) , it will respond the request from both of them.
 
-## how to use  
-1. `yarn start`  
-2. use api `POST /approval/registry` to register the approval process  
+[Click Here](https://github.com/shawnliujw/slack-approval-guard/blob/master/README.md#workflow) to get more screenshots to see how it works.
+
+## Workflow  
+1. receive *Approval Process* request from [Slack Approval Guard](https://github.com/shawnliujw/slack-approval-guard/blob/master/README.md)
+2. send message to the specific slack group
+3. listen the interactive actions from slack and response the latest status to [Slack Approval Guard](https://github.com/shawnliujw/slack-approval-guard/blob/master/README.md)
+
+## How to use  
+* Setup slack workspace and create an App for this integration
+* run `yarn start` and get public domain , if you run from your localhost, you can try [localhost.sh](https://localhost.run/) or [ngrok](https://ngrok.com/) 
+* after Slack App setup, please find the token, secret, channel(receive approval message) and configure them by these env variable  before you start your project  
+```yaml
+SLACK_SIGNING_SECRET=xxx
+SLACK_SIGNING_TOKEN=xxx
+SLACK_CHANNEL=xxxx
+```
+* then can use it together with [Slack Approval Guard](https://github.com/shawnliujw/slack-approval-guard/blob/master/README.md)
+
+
+## API List
+* `POST /approval/registry`  register the approval process  
 ```js
 const params = {
-    namespace: 'kezhaozhao/es-search', //CI_PROJECT_NAME
+    namespace: 'xxx', //CI_PROJECT_NAME
     environment: 'Dev', //CI_ENVIRONMENT_NAME
-    project: 'es-search-service', //CI_PROJECT_NAMESPACE
+    project: 'xxx', //CI_PROJECT_NAMESPACE
     projectURL: 'xxxxxx', // CI_PROJECT_URL
     pipelineId: '5293', // $CI_PIPELINE_ID
     branch: 'develop', // CI_COMMIT_REF_NAME
-    author: 'Liu Jianwei', // GITLAB_USER_NAME
+    author: 'xxx', // GITLAB_USER_NAME
     commitTitle: 'debug flagger webhook gates', // CI_COMMIT_TITLE
     commitId: '7573e5f709c6231750a20601f0b3c1bc7231675f' // CI_COMMIT_SHA
 }
 ```
-3. use api `GET /approval/gate?project=xxx&pipeline=xxx` to check the approval result  
-4. configure `<domain>/approval/callabck` to your slack app interactive callback  
+* `GET /approval/gate?project=xxx&pipeline=xxx`  check the approval result  
+* configure `<domain>/approval/callabck` to your slack app interactive callback  
 
-## use with gitlab ci  
-1. deploy the `slack-approval` and get domain , like `http://slack.example.com`  
-2. use the check in your gitlab-ci:  
-* Now the slack-approval-checker image integrate kubectl already
-```yaml
-deploy_prod:
-  image: registry.cn-shanghai.aliyuncs.com/shawn_repo/slack-approval-checker
-  stage: sample
-  script:
-    - node /app/check.js setup $CI_PROJECT_NAME -n $CI_PROJECT_NAMESPACE -e $CI_ENVIRONMENT_NAME -P $CI_PROJECT_URL -p $CI_PIPELINE_ID -b $CI_COMMIT_REF_NAME -a $GITLAB_USER_NAME -c $CI_COMMIT_TITLE -C $CI_COMMIT_SHA -s 'http://slack.example.com/approval'
-    - if [ $N -ne 0 ];  then exit ; fi
-    - [your other scripts]
-```
+

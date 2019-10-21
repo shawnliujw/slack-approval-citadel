@@ -63,4 +63,4 @@ typings/
 checker/package.json
 .idea
 test-checker.sh
-
+build-approval.sh

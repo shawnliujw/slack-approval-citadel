@@ -14,7 +14,7 @@ jobs:
     - name: Publish to Aliyun Registry
       uses: elgohr/Publish-Docker-Github-Action@master
       with:
-        name: shawn_repo/slack-approval-gitadel
+        name: shawn_repo/slack-approval-citadel
         username: ${{ secrets.ALI_DOCKER_USERNAME }}
         password: ${{ secrets.ALI_DOCKER_PASSWORD }}
         registry: ${{ secrets.ALI_DOCKER_REGISTRY }}

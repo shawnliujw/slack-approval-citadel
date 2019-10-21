@@ -1,5 +1,5 @@
 {
-  "name": "slack-approval",
+  "name": "slack-approval-citadel",
   "version": "1.0.0",
   "description": "CI/CD approval with slack",
   "main": "app.js",

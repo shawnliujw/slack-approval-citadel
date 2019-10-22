@@ -125,8 +125,17 @@ Approval.prototype.isApproved = async function() {
 Approval.prototype._findAssignee = function(userId, username) {
   if (this.assignee.length) {
     const o = _.find(this.assignee, { id: userId });
+    if (!o) {
+      return {
+        privilege: false,
+        assignee: {
+          id: userId,
+          name: username
+        }
+      };
+    }
     return {
-      privilege: !!o,
+      privilege: true,
       assignee: Object.assign(o, {
         name: o.name || username
       })

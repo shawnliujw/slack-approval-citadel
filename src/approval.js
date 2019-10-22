@@ -118,18 +118,16 @@ Approval.prototype.getResult = async function() {
  * @param prepositive whether is check before execute the yes or no
  * @returns {Promise<{approved: *, rejected: boolean, operated: boolean, message: string}>}
  */
-Approval.prototype.isApproved = async function(userId, prepositive) {
+Approval.prototype.isApproved = async function(userId) {
   await this._syncRead();
   const approved = this.approved.length !== 0 && this.approved.length >= this.assignee.length;
   const result = {
     approved,
     rejected: !!this.rejected,
-    message: 'This application has all been proceed already',
+    message: 'This application has all been proceed already, thanks.',
+    messageAlert: `<@${userId}> This application has been proceed by other guys already.`,
     operated: false
   };
-  if ((result.approved || result.rejected) && prepositive) {
-    result.message = `<@${userId}> This application has been proceed by other guys already.`;
-  }
   if (!approved && !this.rejected && userId) {
     // not approved ,not rejected , check whether userId has ever do the operation
     const c = _.find(this.approved, { id: userId });

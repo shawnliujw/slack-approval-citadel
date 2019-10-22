@@ -148,10 +148,10 @@ const handleApprovalRes = () => {
         invalidInteractive = true;
         throw new Error(`approvalId(${approvalId}) is expired.`);
       }
-      let approvalStatus = await approval.isApproved(payload.user.id, true);
+      let approvalStatus = await approval.isApproved(payload.user.id);
       if (approvalStatus.approved || approvalStatus.rejected) {
         respond({
-          text: approvalStatus.message,
+          text: approvalStatus.messageAlert,
           link_names: true,
           replace_original: false,
           ephemeral: true

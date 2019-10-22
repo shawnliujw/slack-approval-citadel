@@ -1,5 +1,12 @@
 name: Publish Docker
-on: [push]
+on:
+  push:
+    paths:
+      - 'src/**.js'
+      - 'package.json'
+      - 'Dockerfile'
+      - '.github/workflows/**.yml'
+      - '.github/workflows/**.yaml'
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -11,6 +18,7 @@ jobs:
         name: shawnliu/slack-approval-citadel
         username: ${{ secrets.DOCKER_USERNAME }}
         password: ${{ secrets.DOCKER_PASSWORD }}
+        tag_names: true
     - name: Publish to Aliyun Registry
       uses: elgohr/Publish-Docker-Github-Action@master
       with:
@@ -18,3 +26,4 @@ jobs:
         username: ${{ secrets.ALI_DOCKER_USERNAME }}
         password: ${{ secrets.ALI_DOCKER_PASSWORD }}
         registry: ${{ secrets.ALI_DOCKER_REGISTRY }}
+        tag_names: true

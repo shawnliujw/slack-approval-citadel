@@ -48,6 +48,7 @@ app.post('/approval/registry', async (req, res) => {
     await slackHandler.sendApprovalMessage(body);
     console.log(`Proceed approval process request.`);
     res.json({
+      slackChannel: process.env.SLACK_CHANNEL,
       success: true
     });
   } catch (e) {

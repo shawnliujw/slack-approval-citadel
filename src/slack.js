@@ -148,38 +148,26 @@ const handleApprovalRes = () => {
         invalidInteractive = true;
         throw new Error(`approvalId(${approvalId}) is expired.`);
       }
-      let approvalStatus = await approval.isApproved(payload.user.id);
-      if (approvalStatus.approved || approvalStatus.rejected) {
-        respond({
-          text: approvalStatus.messageAlert,
-          link_names: true,
-          replace_original: false,
-          ephemeral: true
-        });
-        respond({ text: `${payload.original_message.text}\n ~${approvalStatus.message}~`, markdown: true, replace_original: true });
-        return;
-      } else if (approvalStatus.operated) {
+      let approvalStatus = await approval.getStatus(payload.user.id, true);
+      if (approvalStatus.message) {
         respond({
           text: approvalStatus.message,
           link_names: true,
           replace_original: false,
           ephemeral: true
         });
+      }
+      if (approvalStatus.messageThread) {
+        respond({ text: `${payload.original_message.text}\n ~${approvalStatus.messageThread}~`, markdown: true, replace_original: true });
+      }
+      if (approvalStatus.approved || approvalStatus.rejected || approvalStatus.operated) {
         return;
-      } else {
-        respond({
-          text: `<@${payload.user.id}> thank you for your operation on the application at ${nowString()} `,
-          link_names: true,
-          replace_original: false,
-          ephemeral: true
-        }); // response to slack immediately
       }
 
       const resBtnValue = payload.actions[0].value;
 
       const operationRes =
         resBtnValue === 'yes' ? await approval.approve(payload.user.id, payload.user.name) : await approval.reject(payload.user.id, payload.user.name);
-
       if (operationRes.success) {
         await web.chat.postMessage({
           channel: SLACK_CHANNEL,
@@ -196,9 +184,9 @@ const handleApprovalRes = () => {
         });
       }
 
-      approvalStatus = await approval.isApproved();
-      if (approvalStatus.approved || approvalStatus.rejected) {
-        respond({ text: `${payload.original_message.text}\n ~${approvalStatus.message}~`, markdown: true, replace_original: true });
+      const approvalStatusAfter = await approval.getStatus(payload.user.id);
+      if (approvalStatusAfter.approved || approvalStatusAfter.rejected) {
+        respond({ text: `${payload.original_message.text}\n ~${approvalStatusAfter.messageThread}~`, markdown: true, replace_original: true });
       }
       console.log('Action proceed.');
     } catch (e) {

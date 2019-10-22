@@ -99,11 +99,9 @@ Approval.prototype._approvedGet = async function() {
 
 Approval.prototype.getResult = async function() {
   const list = await this._messagePop();
-  const status = await this.isApproved();
-  if (status.approved) {
-    list.push(status.message);
-  } else if (this.approved.length <= this.assignee.length && !this.rejected) {
-    list.push(`Application is waiting approvals...... | progress: ${this.approved.length}/${this.assignee.length || 1} `);
+  const status = await this.getStatus();
+  if (status.message || status.messageThread) {
+    list.push(status.message || status.messageThread);
   }
   return {
     message: list,
@@ -116,26 +114,44 @@ Approval.prototype.getResult = async function() {
  *
  * @param userId
  * @param prepositive whether is check before execute the yes or no
- * @returns {Promise<{approved: *, rejected: boolean, operated: boolean, message: string}>}
  */
-Approval.prototype.isApproved = async function(userId) {
+Approval.prototype.getStatus = async function(userId, prepositive) {
   await this._syncRead();
   const approved = this.approved.length !== 0 && this.approved.length >= this.assignee.length;
+  let message = '';
+  let messageThread = ''; // message send to the thread
   const result = {
     approved,
     rejected: !!this.rejected,
-    message: 'This application has all been proceed already, thanks.',
-    messageAlert: `<@${userId}> This application has been proceed by other guys already.`,
-    operated: false
+    operated: false,
+    message: '',
+    messageThread: ''
   };
-  if (!approved && !this.rejected && userId) {
-    // not approved ,not rejected , check whether userId has ever do the operation
+  if (approved) {
+    // approved already before current user's operation
+    if (prepositive) {
+      message = `<@${userId}> This application has been approved by other guys already.`;
+    } else {
+      messageThread = `This application has been approved.`;
+    }
+  } else if (this.rejected) {
+    if (prepositive) {
+      message = `<@${userId}> This application has been rejected by <@${this.rejected.name}> at ${this.rejected.date}`;
+    } else {
+      messageThread = `This application has been rejected , thanks.`;
+    }
+  } else if (!approved && !this.rejected && userId) {
     const c = _.find(this.approved, { id: userId });
     if (c) {
       result.operated = true;
-      result.message = `<@${userId}> you have proceed the application at ${c.date}, don't need submit repeatedly.`;
+      message = `<@${userId}> you have proceed the application at ${c.date}, don't need submit repeatedly.`;
+    } else {
+      message = `<@${userId}> thank you for your operation on the application at ${utils.nowString()} `;
     }
+  } else {
+    message = `Application is waiting approvals...... | progress: ${this.approved.length}/${this.assignee.length || 1} `;
   }
+  Object.assign(result, { messageThread, message });
   return result;
 };
 

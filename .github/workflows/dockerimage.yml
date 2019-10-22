@@ -1,8 +1,8 @@
 name: Publish Docker
 on:
   push:
-    branches:
-      - '!master'
+    branches-ignore:
+      - 'master'
     paths:
       - 'src/**.js'
       - 'package.json'

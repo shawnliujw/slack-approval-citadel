@@ -48,7 +48,7 @@ Approval.prototype._messagePush = async function(message) {
   }
   const key = `${this.cacheKey}_message`;
   const actions = this.approved.length + (this.rejected ? 1 : 0);
-  await this.client.rpush(key, `${message} | progress: ${actions}/${this.assignee.length || 1}`);
+  await this.client.rpush(key, `progress: ${actions}/${this.assignee.length || 1} | ${message}`);
   await this.client.expire(key, this.ex);
 };
 Approval.prototype._messagePop = async function() {
@@ -141,7 +141,7 @@ Approval.prototype.getStatus = async function(userId, prepositive) {
       message = `<@${userId}> thank you for your operation on the application at ${utils.nowString()} `;
     }
   } else {
-    message = `Application is waiting approvals...... | progress: ${this.approved.length}/${this.assignee.length || 1} `;
+    message = `progress: ${this.approved.length}/${this.assignee.length || 1} | Application is waiting approvals......} `;
   }
   Object.assign(result, { messageThread, message });
   return result;

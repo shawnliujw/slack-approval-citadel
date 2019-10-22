@@ -2,15 +2,7 @@ const _ = require('lodash');
 const utils = require('./utils');
 
 const Approval = function(cacheKey, client, assignee) {
-  this.assignee = assignee
-    ? assignee.map(t => {
-        const a = t.split('|');
-        return {
-          id: a[0],
-          name: a[1]
-        };
-      })
-    : [];
+  this.assignee = assignee;
   this.approved = [];
   this.cacheKey = cacheKey;
   this.rejected = null;

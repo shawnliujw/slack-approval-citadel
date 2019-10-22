@@ -73,6 +73,29 @@ const sendApprovalMessage = async params => {
       }
     ]
   };
+  if (params.assignee) {
+    let message = '';
+    for (let i = 0; i < params.assignee.length; i++) {
+      message += `<@${params.assignee[i].id}>`;
+    }
+    // message += 'You have been assigned new application, please take a action asap , thanks.';
+    slack_message.blocks.push({
+      type: 'section',
+      text: {
+        type: 'mrkdwn',
+        text: `\n\n\n*Attention!!!* \nThis application has been assigned to:\n\n${message} \n\n\n     `
+      }
+    });
+  } else {
+    slack_message.blocks.push({
+      type: 'section',
+      text: {
+        type: 'mrkdwn',
+        text: `\n\n\n*Attention!!!* \nAnybody in current group can approve the application!\n\n\n`
+        // link_names: true
+      }
+    });
+  }
   const slack_message_confirm = {
     channel: SLACK_CHANNEL,
     text: `Would you like to promote the build to ${params.environment}?`,
@@ -109,9 +132,7 @@ const sendApprovalMessage = async params => {
   };
   const result = await web.chat.postMessage(slack_message);
   slack_message_confirm.thread_ts = result.ts;
-  const result1 = await web.chat.postMessage(slack_message_confirm);
-  console.log(`Successfully send message ${result.ts} in conversation ${slack_message.channel}`);
-  console.log(`Successfully send message ${result1.ts} in conversation ${slack_message.channel}`);
+  await web.chat.postMessage(slack_message_confirm);
 };
 
 // const wrappedRespond = respond => {

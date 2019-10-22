@@ -27,17 +27,33 @@ app.use(bodyParser());
 //     author: 'Liu Jianwei', // GITLAB_USER_NAME
 //     commitTitle: 'debug flagger webhook gates', // CI_COMMIT_TITLE
 //     commitId: '7573e5f709c6231750a20601f0b3c1bc7231675f' // CI_COMMIT_SHA
+//     assignee: ''
 // }
 app.post('/approval/registry', async (req, res) => {
-  const body = req.body;
-  const cacheKey = `${body.project}_${body.pipelineId}`;
-  console.log(`Received approval process request: ${cacheKey}`);
-  await Approval.fetch(cacheKey, true, body.assignee ? body.assignee.split(',') : []);
-  body.approvalId = cacheKey;
-  await slackHandler.sendApprovalMessage(body);
-  res.json({
-    success: true
-  });
+  try {
+    const body = req.body;
+    const cacheKey = `${body.project}_${body.pipelineId}`;
+    console.log(`Received approval process request: ${cacheKey}`);
+    body.assignee = body.assignee
+      ? body.assignee.split(',').map(t => {
+          const tmp = t.split('|');
+          return {
+            id: tmp[0],
+            name: tmp[1]
+          };
+        })
+      : [];
+    await Approval.fetch(cacheKey, true, body.assignee);
+    body.approvalId = cacheKey;
+    await slackHandler.sendApprovalMessage(body);
+    console.log(`Proceed approval process request.`);
+    res.json({
+      success: true
+    });
+  } catch (e) {
+    console.error(e);
+    res.status(500).send(e.message);
+  }
 });
 
 app.use('/approval/gate', async (req, res) => {

@@ -73,7 +73,7 @@ const sendApprovalMessage = async params => {
       }
     ]
   };
-  if (params.assignee) {
+  if (params.assignee && params.assignee.length > 0) {
     let message = '';
     for (let i = 0; i < params.assignee.length; i++) {
       message += `<@${params.assignee[i].id}>`;

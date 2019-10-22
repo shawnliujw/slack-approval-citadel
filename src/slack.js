@@ -181,20 +181,12 @@ const handleApprovalRes = () => {
         resBtnValue === 'yes' ? await approval.approve(payload.user.id, payload.user.name) : await approval.reject(payload.user.id, payload.user.name);
 
       if (operationRes.success) {
-        if (resBtnValue === 'yes') {
-          await web.chat.postMessage({
-            channel: SLACK_CHANNEL,
-            link_names: true,
-            text: operationRes.message,
-            thread_ts: payload.message_ts
-          });
-          approvalStatus = await approval.isApproved();
-          if (approvalStatus.approved) {
-            respond({ text: `${payload.original_message.text}\n ~${approvalStatus.message}~`, markdown: true, replace_original: true });
-          }
-        } else {
-          respond({ text: `${payload.original_message.text}\n ~${approvalStatus.message}~`, markdown: true, replace_original: true });
-        }
+        await web.chat.postMessage({
+          channel: SLACK_CHANNEL,
+          link_names: true,
+          text: operationRes.message,
+          thread_ts: payload.message_ts
+        });
       } else {
         respond({
           text: operationRes.message,
@@ -204,6 +196,10 @@ const handleApprovalRes = () => {
         });
       }
 
+      approvalStatus = await approval.isApproved();
+      if (approvalStatus.approved || approvalStatus.rejected) {
+        respond({ text: `${payload.original_message.text}\n ~${approvalStatus.message}~`, markdown: true, replace_original: true });
+      }
       console.log('Action proceed.');
     } catch (e) {
       console.error(e);

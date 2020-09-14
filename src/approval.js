@@ -7,7 +7,7 @@ const Approval = function(cacheKey, client, assignee) {
   this.cacheKey = cacheKey;
   this.rejected = null;
   this.client = client;
-  this.ex = 3600;
+  this.ex = 24 * 3600;
 };
 
 Approval.prototype._syncRead = async function() {

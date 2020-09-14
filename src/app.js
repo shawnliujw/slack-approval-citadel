@@ -36,12 +36,12 @@ app.post('/approval/registry', async (req, res) => {
     console.log(`Received approval process request: ${cacheKey}`);
     body.assignee = body.assignee
       ? body.assignee.split(',').map(t => {
-          const tmp = t.split('|');
-          return {
-            id: tmp[0],
-            name: tmp[1]
-          };
-        })
+        const tmp = t.split('|');
+        return {
+          id: tmp[0],
+          name: tmp[1]
+        };
+      })
       : [];
     await Approval.fetch(cacheKey, true, body.assignee);
     body.approvalId = cacheKey;
@@ -70,7 +70,8 @@ const _getApprovalResult = async (project, pipelineId) => {
   }
 };
 
-app.use('/approval/promotion', async (req, res) => {
+// flagger configrm-promotion webhook url when the webhook type is 'slack'
+app.use('/approval/slack', async (req, res) => {
   const body = req.query;
   const approvalResult = await _getApprovalResult(body.project, body.pipelineId);
   if (!approvalResult || !approvalResult.data) {
@@ -84,6 +85,58 @@ app.use('/approval/promotion', async (req, res) => {
   }
 });
 
+// 手动通过 gitlab 发起的approval
+app.use('/approval/approve/gitlab', async (req, res) => {
+  const body = req.query;
+  const response = {};
+  if (!body.project || !body.pipelineId) {
+    response.code = 400;
+    response.message = 'both project and pipelineId are required in query parameters';
+  } else {
+    const jobKey = `${body.project}_${body.pipelineId}`;
+    const { redis } = global;
+    const existingJob = await redis.get(jobKey);
+    if (existingJob) {
+      await redis.set(jobKey, 'approved');
+      response.code = 200;
+      response.message = 'approved job success';
+    } else {
+      response.code = 404;
+      response.message = 'job not exist';
+    }
+  }
+
+  res.status(response.code).json({
+    message: response.message
+  });
+});
+
+// flagger configrm-promotion webhook url when the webhook type is 'gitlab'
+app.use('/approval/gitlab', async (req, res) => {
+  const body = req.query;
+  const response = {};
+  if (!body.project || !body.pipelineId) {
+    response.code = 400;
+    response.message = 'both project and pipelineId are required in query parameters';
+  } else {
+    const jobKey = `${body.project}_${body.pipelineId}`;
+    const { redis } = global;
+    const existingJob = await redis.get(jobKey);
+    if (existingJob) {
+      const approved = (existingJob === 'approved');
+      response.code = approved ? 200 : 403;
+      response.message = approved ? 'promotion has been approved' : 'promotion is waiting approved';
+    } else {
+      response.code = 404;
+      response.message = 'job not exist';
+    }
+  }
+  res.status(response.code).json({
+    message: response.message
+  });
+});
+
+// check whether should process the deployment pipline in gitlab job(before deploy)
 app.use('/approval/gate', async (req, res) => {
   try {
     const body = req.query;

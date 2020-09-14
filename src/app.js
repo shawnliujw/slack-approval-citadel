@@ -71,7 +71,7 @@ const _getApprovalResult = async (project, pipelineId) => {
 };
 
 // flagger configrm-promotion webhook url when the webhook type is 'slack'
-app.use('/approval/slack', async (req, res) => {
+app.use('/approval/promotion/slack', async (req, res) => {
   const body = req.query;
   const approvalResult = await _getApprovalResult(body.project, body.pipelineId);
   if (!approvalResult || !approvalResult.data) {
@@ -112,7 +112,7 @@ app.use('/approval/approve/gitlab', async (req, res) => {
 });
 
 // flagger configrm-promotion webhook url when the webhook type is 'gitlab'
-app.use('/approval/gitlab', async (req, res) => {
+app.use('/approval/promotion/gitlab', async (req, res) => {
   const body = req.query;
   const response = {};
   if (!body.project || !body.pipelineId) {

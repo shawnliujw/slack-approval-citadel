@@ -2,7 +2,7 @@ FROM node:12.12-alpine
 MAINTAINER Shanw Liu <shawn.jw.liu@gmail.com>
 WORKDIR /app
 
-COPY package.json  ./
+COPY package.json yarn.lock  ./
 RUN yarn install
 
 FROM node:12.12-alpine

@@ -57,21 +57,44 @@ app.post('/approval/registry', async (req, res) => {
   }
 });
 
+const _getApprovalResult = async (project, pipelineId) => {
+  const cachekey = `${project}_${pipelineId}`;
+  console.log(`Fetching approval status: ${cachekey}`);
+  const approval = await Approval.fetch(cachekey);
+  if (!approval) {
+    return { message: `Approval '${project}_${pipelineId}' doesn't exist` };
+  } else {
+    return {
+      data: await approval.getResult()
+    };
+  }
+};
+
+app.use('/approval/promotion', async (req, res) => {
+  const body = req.query;
+  const approvalResult = await _getApprovalResult(body.project, body.pipelineId);
+  if (!approvalResult || !approvalResult.data) {
+    res.status(404).json({
+      message: [approvalResult.message],
+      nonExist: true
+    });
+  } else {
+    const status = approvalResult.data.approved ? 200 : 403;
+    res.status(status).json(approvalResult.data);
+  }
+});
+
 app.use('/approval/gate', async (req, res) => {
   try {
     const body = req.query;
-    const cachekey = `${body.project}_${body.pipelineId}`;
-    console.log(`Fetching approval status: ${cachekey}`);
-    const approval = await Approval.fetch(cachekey);
-    if (!approval) {
+    const approvalResult = await _getApprovalResult(body.project, body.pipelineId);
+    if (!approvalResult.data) {
       res.json({
-        message: [`Approval '${cachekey}' doesn't exist`],
+        message: [approvalResult.message],
         nonExist: true
       });
     } else {
-      const r = await approval.getResult();
-      // console.log(r);
-      res.json(r);
+      res.json(approvalResult.data);
     }
   } catch (e) {
     console.error(e);
